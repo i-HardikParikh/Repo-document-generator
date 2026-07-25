@@ -1,4 +1,4 @@
-# documentation_assistant
+# Repo-document-generator
 
 
 
@@ -19,8 +19,8 @@ Already a pro? Just edit this README.md and make it your own. Want to make it ea
 
 1. **Clone the repository**
    ```bash
-   git clone https://github.com/username/documentation_assistant.git
-   cd documentation_assistant
+   git clone https://github.com/i-HardikParikh/Repo-document-generator.git
+   cd Repo-document-generator
    ```
 
 2. **Create and activate a virtual environment (recommended)**
@@ -86,14 +86,14 @@ Already a pro? Just edit this README.md and make it your own. Want to make it ea
 
 ```
 cd existing_repo
-git remote add origin https://github.com/username/documentation_assistant.git
+git remote add origin https://github.com/i-HardikParikh/Repo-document-generator.git
 git branch -M main
 git push -uf origin main
 ```
 
 ## Integrate with your tools
 
-- [ ] [Set up project integrations](https://github.com/username/documentation_assistant/settings/installations)
+- [ ] [Set up project integrations](https://github.com/i-HardikParikh/Repo-document-generator/settings/installations)
 
 ## Collaborate with your team
 
