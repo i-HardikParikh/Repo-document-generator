@@ -1,0 +1,35 @@
+# Ignore Python bytecode and cache
+__pycache__/
+*.py[cod]
+*.pyo
+
+# Virtual environment
+venv/
+env/
+
+# Ignore .env file for secrets
+.env
+
+# Ignore project output folder
+output/
+
+# Ignore cloned repository folder
+cloned_repo/
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints/
+
+# VSCode settings (optional)
+.vscode/
+
+# macOS system files
+.DS_Store
+
+# Logs and temporary files
+*.log
+*.tmp
+*.swp
+
+# Ignore requirements lock files (optional)
+poetry.lock
+Pipfile.lock
