@@ -1,4 +1,4 @@
-# Documentation Assistant (Repo-document-generator)
+# Repo-document-generator (Documentation Assistant) 
 
 An automated tool designed to generate clean, structured, and QA-reviewed technical documentation for codebase repositories (GitHub, GitLab, and Bitbucket) using a collaborative multi-agent AI system.
 
