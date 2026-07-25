@@ -1,19 +1,37 @@
-# Repo-document-generator
+# Documentation Assistant (Repo-document-generator)
 
+An automated tool designed to generate clean, structured, and QA-reviewed technical documentation for codebase repositories (GitHub, GitLab, and Bitbucket) using a collaborative multi-agent AI system.
 
+The application features a responsive **Streamlit Web UI** frontend and a high-performance **FastAPI Backend Router** orchestration engine running **CrewAI** agents.
 
-## Getting started
+---
 
-To make it easy for you to get started with GitLab, here's a list of recommended next steps.
+## 🔍 Features
+- **Iterative AI Review Loop**: A writer agent (`code_analyzer`) drafts technical documentation, which is then vetted by a reviewer agent (`qa_agent`) over multiple iterations (up to 3 cycles) to ensure completeness.
+- **Failover Redundancy**: Automatically falls back to a local Ollama server running `llama3` if OpenAI API calls encounter credentials or rate-limiting errors.
+- **VCS Integration**: Seamlessly clones, pulls, and checks out branches for public and private repositories (GitHub, GitLab, and Bitbucket) using secure `GIT_ASKPASS` credential injection.
+- **Multi-Format Document Exporters**: Generates and compiles deliverables in Markdown (`.md`), HTML (`.html`), JSON (`.json`), YAML (`.yaml`), and print-ready PDF (`.pdf`) formats.
+- **Inline Document Previewer**: Live, formatted previews (including embedded PDF frame rendering) directly on the Streamlit dashboard prior to download.
 
-Already a pro? Just edit this README.md and make it your own. Want to make it easy? [Use the template at the bottom](#editing-this-readme)!
+---
 
-## Run Commands
+## 🛠️ Tech Stack
+- **Backend API**: FastAPI (0.115.9), Uvicorn (0.34.2)
+- **Frontend Dashboard**: Streamlit (1.x)
+- **AI Agent Framework**: CrewAI (0.121.0), LangChain (0.3.25)
+- **Model Services**: OpenAI (`gpt-4o-mini`), Ollama (`llama3` local failover)
+- **Git client integration**: GitPython (3.1.44)
+- **Exporters**: ReportLab (4.4.1), PyPDF2 (3.0.1), python-markdown (3.8), PyYAML (6.0.2)
+
+---
+
+## 🚀 Getting Started
 
 ### Prerequisites
-- Python 3.8 or higher
-- pip (Python package manager)
-- Git
+Before running the application, make sure you have:
+1. **Python 3.8** or higher installed.
+2. **Git CLI** installed and added to your system environment variables.
+3. (Optional) **Ollama** running locally on port `11434` with the `llama3` model downloaded (`ollama pull llama3`) for local failover support.
 
 ### Setup and Installation
 
@@ -23,142 +41,71 @@ Already a pro? Just edit this README.md and make it your own. Want to make it ea
    cd Repo-document-generator
    ```
 
-2. **Create and activate a virtual environment (recommended)**
+2. **Create and activate a virtual environment**
    ```bash
-   # Windows
+   # On Windows (Command Prompt / PowerShell)
    python -m venv venv
    .\venv\Scripts\activate
 
-   # Linux/MacOS
+   # On macOS / Linux
    python3 -m venv venv
    source venv/bin/activate
    ```
 
-3. **Install dependencies**
+3. **Install project dependencies**
    ```bash
    pip install -r requirements.txt
    ```
 
-### Running the Application
-
-1. **Start the development server**
-   ```bash
-   python app.py
-   ```
-   The application will be available at `http://localhost:5000`
-
-2. **Run tests**
-   ```bash
-   python -m pytest tests/
+4. **Configure Environment Variables**
+   Create a `.env` file in the root directory:
+   ```ini
+   OPENAI_API_KEY=your-openai-api-key-here
    ```
 
-3. **Linting**
-   ```bash
-   # Run linter
-   flake8 .
-   
-   # Auto-format code
-   black .
-   ```
+---
 
-4. **Database migrations**
-   ```bash
-   # Create a new migration
-   flask db migrate -m "Your migration message"
-   
-   # Apply migrations
-   flask db upgrade
-   ```
+## 💻 Running the Application
 
-5. **Environment variables**
-   Create a `.env` file in the root directory with the following variables:
-   ```
-   FLASK_APP=app.py
-   FLASK_ENV=development
-   SECRET_KEY=your-secret-key-here
-   DATABASE_URL=sqlite:///app.db
-   ```
+To run the full application, start both the FastAPI backend server and the Streamlit frontend dashboard:
 
-## Add your files
-
-- [ ] [Create](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#create-a-file) or [upload](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#upload-a-file) files
-- [ ] [Add files using the command line](https://docs.gitlab.com/ee/gitlab-basics/add-file.html#add-a-file-using-the-command-line) or push an existing Git repository with the following command:
-
+### 1. Start the FastAPI Backend
+```bash
+uvicorn main:app --reload --port 8000
 ```
-cd existing_repo
-git remote add origin https://github.com/i-HardikParikh/Repo-document-generator.git
-git branch -M main
-git push -uf origin main
+- The backend API server will be available at `http://localhost:8000`.
+- Access the interactive API docs (Swagger UI) at `http://localhost:8000/docs`.
+
+### 2. Start the Streamlit Frontend
+In a separate terminal window (with the virtual environment activated):
+```bash
+streamlit run app.py
 ```
+- The frontend dashboard will open automatically in your default browser at `http://localhost:8501`.
 
-## Integrate with your tools
+---
 
-- [ ] [Set up project integrations](https://github.com/i-HardikParikh/Repo-document-generator/settings/installations)
+## ⚙️ Configuration & Environment Variables
 
-## Collaborate with your team
+The application is configured using a `.env` file in the project root:
 
-- [ ] [Invite team members and collaborators](https://docs.gitlab.com/ee/user/project/members/)
-- [ ] [Create a new merge request](https://docs.gitlab.com/ee/user/project/merge_requests/creating_merge_requests.html)
-- [ ] [Automatically close issues from merge requests](https://docs.gitlab.com/ee/user/project/issues/managing_issues.html#closing-issues-automatically)
-- [ ] [Enable merge request approvals](https://docs.gitlab.com/ee/user/project/merge_requests/approvals/)
-- [ ] [Set auto-merge](https://docs.gitlab.com/ee/user/project/merge_requests/merge_when_pipeline_succeeds.html)
+| Variable Name | Required | Default Value | Description |
+|---|---|---|---|
+| `OPENAI_API_KEY` | **Yes** (Cloud Mode) | N/A | The API key utilized by CrewAI and LangChain to authenticate with OpenAI model services. |
+| `GIT_TERMINAL_PROMPT` | Managed by code | `0` | Inhibits Git from launching interactive prompts on credentials request. |
+| `GIT_CONFIG_PARAMETERS` | Managed by code | `'credential.helper='` | Clears local Git configuration helpers. |
+| `GIT_ASKPASS` | Managed by code | Path to helper | Points Git to the custom credential injection script. |
 
-## Test and Deploy
+---
 
-Use the built-in continuous integration in GitLab.
+## 🤝 Contributing
+1. Fork the repository.
+2. Create a feature branch: `git checkout -b feature/your-feature-name`.
+3. Commit your changes: `git commit -m 'Add your feature details'`.
+4. Push to your branch: `git push origin feature/your-feature-name`.
+5. Open a Pull Request.
 
-- [ ] [Get started with GitLab CI/CD](https://docs.gitlab.com/ee/ci/quick_start/index.html)
-- [ ] [Analyze your code for known vulnerabilities with Static Application Security Testing (SAST)](https://docs.gitlab.com/ee/user/application_security/sast/)
-- [ ] [Deploy to Kubernetes, Amazon EC2, or Amazon ECS using Auto Deploy](https://docs.gitlab.com/ee/topics/autodevops/requirements.html)
-- [ ] [Use pull-based deployments for improved Kubernetes management](https://docs.gitlab.com/ee/user/clusters/agent/)
-- [ ] [Set up protected environments](https://docs.gitlab.com/ee/ci/environments/protected_environments.html)
+---
 
-***
-
-# Editing this README
-
-When you're ready to make this README your own, just edit this file and use the handy template below (or feel free to structure it however you want - this is just a starting point!). Thanks to [makeareadme.com](https://www.makeareadme.com/) for this template.
-
-## Suggestions for a good README
-
-Every project is different, so consider which of these sections apply to yours. The sections used in the template are suggestions for most open source projects. Also keep in mind that while a README can be too long and detailed, too long is better than too short. If you think your README is too long, consider utilizing another form of documentation rather than cutting out information.
-
-## Name
-Choose a self-explaining name for your project.
-
-## Description
-Let people know what your project can do specifically. Provide context and add a link to any reference visitors might be unfamiliar with. A list of Features or a Background subsection can also be added here. If there are alternatives to your project, this is a good place to list differentiating factors.
-
-## Badges
-On some READMEs, you may see small images that convey metadata, such as whether or not all the tests are passing for the project. You can use Shields to add some to your README. Many services also have instructions for adding a badge.
-
-## Visuals
-Depending on what you are making, it can be a good idea to include screenshots or even a video (you'll frequently see GIFs rather than actual videos). Tools like ttygif can help, but check out Asciinema for a more sophisticated method.
-
-## Installation
-Within a particular ecosystem, there may be a common way of installing things, such as using Yarn, NuGet, or Homebrew. However, consider the possibility that whoever is reading your README is a novice and would like more guidance. Listing specific steps helps remove ambiguity and gets people to using your project as quickly as possible. If it only runs in a specific context like a particular programming language version or operating system or has dependencies that have to be installed manually, also add a Requirements subsection.
-
-## Usage
-Use examples liberally, and show the expected output if you can. It's helpful to have inline the smallest example of usage that you can demonstrate, while providing links to more sophisticated examples if they are too long to reasonably include in the README.
-
-## Support
-Tell people where they can go to for help. It can be any combination of an issue tracker, a chat room, an email address, etc.
-
-## Roadmap
-If you have ideas for releases in the future, it is a good idea to list them in the README.
-
-## Contributing
-State if you are open to contributions and what your requirements are for accepting them.
-
-For people who want to make changes to your project, it's helpful to have some documentation on how to get started. Perhaps there is a script that they should run or some environment variables that they need to set. Make these steps explicit. These instructions could also be useful to your future self.
-
-You can also document commands to lint the code or run tests. These steps help to ensure high code quality and reduce the likelihood that the changes inadvertently break something. Having instructions for running tests is especially helpful if it requires external setup, such as starting a Selenium server for testing in a browser.
-
-## Authors and acknowledgment
-Show your appreciation to those who have contributed to the project.
-
-## License
-For open source projects, say how it is licensed.
-
-## Project status
-If you have run out of energy or time for your project, put a note at the top of the README saying that development has slowed down or stopped completely. Someone may choose to fork your project or volunteer to step in as a maintainer or owner, allowing your project to keep going. You can also make an explicit request for maintainers.
+## 📄 License
+This project is licensed under the MIT License - see the LICENSE file for details.

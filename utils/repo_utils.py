@@ -116,16 +116,28 @@ def clone_repo(url: str, base_folder: str = "cloned_repo", branch: str = None,
         # If we get here, either the directory doesn't exist or we need a fresh clone
         print(f"Cloning repository...")
         # Clone the repository using safe credentials environment
-        repo = git.Repo.clone_from(clean_url, repo_dir, env=env_vars)
-        
-        # If branch is specified, checkout that branch
-        if branch:
-            print(f"Checking out branch: {branch}")
-            repo.git.checkout(branch)
+        try:
+            print(f"Attempting shallow clone (depth=1)...")
+            clone_kwargs = {"env": env_vars, "depth": 1}
+            if branch:
+                clone_kwargs["branch"] = branch
+            repo = git.Repo.clone_from(clean_url, repo_dir, **clone_kwargs)
+            print(f"Successfully cloned repository using shallow clone")
+        except git.exc.GitCommandError as e:
+            print(f"Shallow clone failed: {str(e)}. Falling back to full clone...")
+            if repo_dir.exists():
+                shutil.rmtree(repo_dir, ignore_errors=True)
+            # Fallback retry with full clone
+            clone_kwargs = {"env": env_vars}
+            if branch:
+                clone_kwargs["branch"] = branch
+            repo = git.Repo.clone_from(clean_url, repo_dir, **clone_kwargs)
+            print(f"Successfully cloned repository using full clone fallback")
             
         print(f"Successfully cloned repository")
         print(f"Current branch: {repo.active_branch}")
         return str(repo_dir)
+
         
     except Exception as e:
         print(f"Error during repository cloning: {str(e)}")

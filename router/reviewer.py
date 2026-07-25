@@ -121,8 +121,9 @@ async def review_repo(request: ReviewRequest) -> Response:
 
     # Reset agents to standard LLM for each review run
     from crewai import LLM
-    code_analyzer.llm = LLM(model="gpt-4o-mini")
-    qa_agent.llm = LLM(model="gpt-4o-mini")
+    ai_model = os.getenv("AI_MODEL", "gpt-4o-mini")
+    code_analyzer.llm = LLM(model=ai_model)
+    qa_agent.llm = LLM(model=ai_model)
     code_analyzer._using_fallback = False
     qa_agent._using_fallback = False
 
@@ -250,7 +251,9 @@ async def review_repo(request: ReviewRequest) -> Response:
                     logger.warning(f"\n⚠️ OpenAI API call failed: {str(e)}")
                     logger.warning("Attempting fallback to local Ollama (llama3)...")
                     from crewai import LLM
-                    fallback_llm = LLM(model="ollama/llama3", base_url="http://localhost:11434")
+                    fallback_model = os.getenv("FALLBACK_MODEL", "ollama/llama3")
+                    ollama_base_url = os.getenv("OLLAMA_BASE_URL", "http://localhost:11434")
+                    fallback_llm = LLM(model=fallback_model, base_url=ollama_base_url)
                     
                     # Switch agents to Ollama
                     code_analyzer.llm = fallback_llm
